@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<form class="leaf" id="form" autocomplete="off">
+  <div class="fill rise">
+    <p class="kick">Members only <span class="wine" id="test" hidden>· Test group</span></p>
+    <h1 class="head">What’s the password?</h1>
+    <p class="lede">The one your host shared with you privately. Everything you share is encrypted with it, and you’ll only see the people who used the same one.</p>
+    <input class="field line" id="pass" type="password" placeholder="Password…" autocomplete="current-password" enterkeyhint="go" required>
+    <p class="fine wine" id="oops" hidden>We couldn’t get things ready. Check your connection and try again.</p>
+  </div>
+  <div class="bar">
+    <button class="ghost round" type="button" id="back" aria-label="Back">←</button>
+    <button class="go grow" id="next" disabled>Unlock <span>→</span></button>
+  </div>
+</form>
+
+<style>
+.fill { gap: 1.1rem; }
+.field.line { margin-top: 1rem; letter-spacing: 0.1em; }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  test.hidden = !(req.body || {}).test;
+  res.send(document);
+});
+
+var PASS = {};
+PASS.send = function(){
+  if(!pass.value){ return }
+  next.disabled = true; oops.hidden = true;
+  next.firstChild.textContent = 'Unlocking… ';
+  kit.say({to:'pass', pass: pass.value}, 'go');
+};
+pass.oninput = () => { next.disabled = !pass.value; oops.hidden = true };
+form.onsubmit = eve => { eve.preventDefault(); PASS.send() };
+back.onclick = () => kit.say({to:'back'}, 'go');
+kit.ear('oops', () => { oops.hidden = false; next.disabled = false; next.firstChild.textContent = 'Unlock ' });
+</script>

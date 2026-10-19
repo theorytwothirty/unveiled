@@ -14,12 +14,7 @@
   <div class="deck" id="deep"></div>
   <div class="pile seal">
     <p class="fine">Toggle what the group can see. Private answers never leave your phone.</p>
-    <div class="pile lock" id="lock">
-      <p class="kick">Group password <span class="wine" id="test" hidden>· Test</span></p>
-      <input class="field line" id="pass" type="password" placeholder="Password…" autocomplete="current-password">
-      <p class="fine">The one your host shared with you privately. Your answers are encrypted with it, and you’ll see everyone who used the same one.</p>
-    </div>
-    <button class="link swap" id="swap" hidden>Use a different password</button>
+    <button class="link swap" id="swap">Use a different group password</button>
     <label class="tick"><input type="checkbox" id="ok"><span>I understand that the answers I’ve chosen to share will be visible to other members of this group.</span></label>
     <p class="fine wine" id="oops" hidden></p>
   </div>
@@ -52,7 +47,6 @@
 .text.nil { display: none; font-style: italic; color: var(--soft); }
 .item.skip .text.nil { display: block; } .item.skip .flip { opacity: 0.45; }
 .seal { gap: 0.5rem; padding-top: 1.5rem; }
-.lock { gap: 0.4rem; padding: 0.75rem 0; }
 .swap { justify-self: start; padding-left: 0; }
 </style>
 
@@ -63,7 +57,6 @@ kit.createServer(function(req, res){
   core.replaceChildren(); deep.replaceChildren();
   (c.list || []).forEach(LOOK.row);
   ok.checked = false; send.disabled = true; oops.hidden = true;
-  lock.hidden = !!c.in; swap.hidden = !c.in; test.hidden = !c.test; pass.value = '';
   res.send(document);
 });
 
@@ -77,13 +70,10 @@ LOOK.row = function(a, el, box){
   (a.deep ? deep : core).pin(el);
 };
 
-LOOK.ready = () => ok.checked && (lock.hidden || !!pass.value);
-ok.onchange = pass.oninput = () => { send.disabled = !LOOK.ready() };
-swap.onclick = () => { lock.hidden = false; swap.hidden = true; pass.focus(); LOOK.ready() || (send.disabled = true) };
-send.onclick = () => {
-  if(!LOOK.ready()){ return } send.disabled = true;
-  kit.say({to:'send', pass: lock.hidden ? '' : pass.value}, 'go');
-};
+LOOK.ready = () => ok.checked;
+ok.onchange = () => { send.disabled = !LOOK.ready() };
+swap.onclick = () => kit.say({to:'repass'}, 'go');
+send.onclick = () => { if(!LOOK.ready()){ return } send.disabled = true; kit.say({to:'send'}, 'go') };
 back.onclick = () => kit.say({to:'back'}, 'go');
 rename.onclick = () => kit.say({to:'rename'}, 'go');
 kit.ear('oops', eve => { oops.textContent = (eve.detail || {}).err || ''; oops.hidden = false; send.disabled = !LOOK.ready() });

@@ -15,7 +15,7 @@ python3 -m http.server 8077
 Then open http://localhost:8077.
 
 - **Test vs real:** `localhost`, `127.0.0.1` and any URL with `?test` use the GUN root `unveiled-test`. Anything else uses `unveiled`. The first time a password is used in the test root, the four fictional people (Alex, Jordan, Sam, Riley) are planted for it. They never appear in the real root.
-- **The password:** nothing to set up. Everyone types the same password when they tap *Share my answers*. Their card is saved encrypted with it, and the gallery shows exactly the cards that were saved with the same password. A typo just means you see nobody, and your card is invisible to the others; use *Use a different password* in the review screen to fix it.
+- **The password:** nothing to set up. Whatever password you share with friends *is* the group. Everyone types it on the screen right after Welcome. Their card is saved encrypted with it, and the gallery shows exactly the cards saved with the same password. A typo just means you see nobody, and your card is invisible to the others; *Use a different group password* on the review screen fixes it.
 
 ## How the privacy works
 
@@ -39,7 +39,7 @@ Then open http://localhost:8077.
 | `data/act.js` | Its actions: `ping`, `join`, `all`, `one`, `put`, `cut` |
 | `data/net.js` | GUN helpers: relay, timed reads/writes, signing queue, device key |
 | `data/seed.js` | Fictional people for the test root |
-| `view/*.html` | Screens: `hello`, `name`, `card`, `dark`, `look`, `done`, `all`, `one` |
+| `view/*.html` | Screens: `hello`, `pass`, `name`, `card`, `dark`, `look`, `done`, `all`, `one` |
 | `app.css` | Design tokens and shared classes |
 
 ## Tests
