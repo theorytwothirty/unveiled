@@ -7,7 +7,7 @@
     <h1 class="big wine">The Unveiled Collective</h1>
     <p class="sub">Get to know the people behind the names.</p>
     <p class="kick tally" name="tally"></p>
-    <p class="fine" id="slow" hidden>Still gathering everyone. Come back in a moment to see more.</p>
+    <p class="fine" id="slow" hidden>Gathering everyone…</p>
   </header>
   <div class="grid" id="grid"></div>
   <footer class="pile foot">
@@ -52,29 +52,41 @@
 </style>
 
 <script>
+// first whoever is already known, then everyone else as they arrive (the 'person' stream below)
 kit.createServer(function(req, res){
-  var c = req.body || {}, n = (c.list || []).length;
-  kit.bind(document, {
-    tally: n + (1 === n ? ' person. ' : ' people. ') + (c.told || 0) + ' stories. A little more connection.'
-  });
-  slow.hidden = !c.slow; ALL.all = c.all || 10;
+  var c = req.body || {};
+  ALL.all = c.all || 10; ALL.me = c.me; ALL.data = {}; ALL.els = {};
   grid.replaceChildren();
-  (c.list || []).forEach(one => ALL.card(one, c.me));
+  (c.list || []).forEach(ALL.put);
+  ALL.sum();
   res.send(document);
 });
 
-var ALL = {};
+var ALL = {data: {}, els: {}};
+ALL.put = function(one){
+  if(one.gone){ ALL.els[one.id] && ALL.els[one.id].remove(); delete ALL.els[one.id]; delete ALL.data[one.id]; return }
+  ALL.data[one.id] = one;
+  ALL.els[one.id] ? ALL.fill(ALL.els[one.id], one) : ALL.card(one);
+};
+ALL.sum = function(n, told){
+  n = Object.keys(ALL.data).length;
+  told = Object.values(ALL.data).reduce((t, one) => t + one.told, 0);
+  kit.bind(document, {tally: n + (1 === n ? ' person. ' : ' people. ') + told + ' stories. A little more connection.'});
+  slow.hidden = !!n;
+};
 ALL.lines = ['A little mystery. A little magic.', 'Soft words. Bold heart.', 'Curious, and not afraid to say so.',
   'Still waters. Warm currents.', 'Equal parts honey and heat.', 'A slow burn worth waiting for.', 'Open door. Gentle hands.'];
 ALL.pick = (name, h) => { h = 0; for(var i = 0; i < name.length; i++){ h = (h * 31 + name.charCodeAt(i)) >>> 0 } return ALL.lines[h % ALL.lines.length] };
-ALL.card = function(one, me, el){
-  el = kit.bind(model.content.firstElementChild.cloneNode(true), {
-    mono: one.name.charAt(0).toUpperCase(), name: one.name, first: one.name, line: ALL.pick(one.name),
-    told: one.told + ' of ' + ALL.all + ' shared' });
-  el.tag('mine', one.id === me ? 1 : -1);
+ALL.fill = (el, one) => kit.bind(el, {
+  mono: one.name.charAt(0).toUpperCase(), name: one.name, first: one.name, line: ALL.pick(one.name),
+  told: one.told + ' of ' + ALL.all + ' shared' });
+ALL.card = function(one, el){
+  el = ALL.els[one.id] = ALL.fill(model.content.firstElementChild.cloneNode(true), one);
+  el.tag('mine', one.id === ALL.me ? 1 : -1);
   el.onclick = () => kit.say({to:'one', who: one.id}, 'go');
   grid.pin(el);
 };
+kit.ear('person', eve => { ALL.put(eve.detail || {}); ALL.sum() });
 
 mine.onclick = () => kit.say({to:'mine'}, 'go');
 swap.onclick = () => kit.say({to:'swap'}, 'go');

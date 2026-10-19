@@ -439,7 +439,8 @@ function pump(view, list, req, src){
     if(src !== req.url || view.readyState){ live.delete(view); view.readyState = 0; view.src = req.url + '#kit' }
     return;
   }
-  list.shift(); busy.set(view, req.ask); req.to = ''; say(view, req);
+  list.shift(); busy.set(view, req.ask); req.to = '';
+  Promise.resolve().then(function(){ say(view, req) }); // after the reply that freed this view: sending inside it hits the echo guard and is dropped
 }
 function push(view, req, list){
   if(!view || !view.contentWindow){ throw new TypeError }

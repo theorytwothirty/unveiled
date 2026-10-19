@@ -28,8 +28,8 @@ API.derive = async function(pass, root, key){
   return {key: key, room: await SEA.work(key, 'room', null, {name: 'SHA-256'})};
 };
 
-API.card = async function(c, pub, enc, card){
-  enc = await NET.seek(NET.gun.get('~' + pub).get(c.ask.root).get(c.ring.room).get('card'), 2500);
+API.card = async function(c, pub, ms, enc, card){
+  enc = await NET.seek(NET.gun.get('~' + pub).get(c.ask.root).get(c.ring.room).get('card'), ms || 2500);
   card = enc && await SEA.decrypt(enc, c.ring.key);
   return card && 'object' === typeof card && card.name ? card : null;
 };

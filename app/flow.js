@@ -18,11 +18,13 @@ page.card = function(spot, q, a){
 };
 page.look = () => ({name: me().name, sent: !!me().sent, list: ASK.list.map((q, i) => ({
   i: i, key: q.key, mark: q.mark, word: q.word, text: me().ans[q.key].text, share: me().ans[q.key].share, deep: !!q.dark }))});
-page.all = async (spot, got) => {
+// the gallery opens at once with whoever is already known; the rest arrive as 'person' events
+page.all = (spot, room) => {
   if(!me().in || !me().sent){ return null }
-  got = await APP.grp.all().catch(err => 401 === err.status ? null : {list: [], told: 0, all: ASK.list.length, slow: 1});
-  if(!got){ return null }
-  got.me = me().id; return got;
+  room = String(me().in);
+  APP.grp.all().then(got => got.list.forEach(d => APP.hear(Object.assign({room: room}, d))),
+    err => 401 === err.status && APP.view.show(APP.home(), 'swap'));
+  return {list: Object.values(APP.seen[room] || {}).filter(d => !d.gone), all: ASK.list.length, me: me().id};
 };
 page.one = async spot => me().in && me().sent ? APP.grp.one(spot.who) : null;
 
@@ -58,6 +60,20 @@ go.all = () => show({at:'all'});
 go.one = d => show({at:'one', who:d.who});
 go.mine = () => show({at:'look'});
 go.cut = async () => { await APP.grp.cut(); show({at:'hello'}, 'swap') };
+
+// the hidden data component says 'person' as people arrive, change or leave. Keep the latest per group,
+// pass it to the gallery when that group's gallery is showing, and replay it whenever the gallery opens.
+APP.seen = {};
+APP.feed = el => el && 'all' === el.at;
+APP.hear = function(d){
+  (APP.seen[d.room] = APP.seen[d.room] || {})[d.id] = d;
+  String(me().in) === d.room && APP.feed(APP.view.el) && kit.say(d, 'person', APP.view.el);
+};
+kit.ear('person', function(eve){
+  if(APP.feed(eve.target)){ return }
+  eve.preventDefault(); APP.hear(eve.detail || {});
+});
+APP.shown = (spot, el) => APP.feed(el) && Object.values(APP.seen[String(me().in)] || {}).forEach(d => kit.say(d, 'person', el));
 
 kit.ear('go', function(eve, d){
   eve.preventDefault(); d = eve.detail || {};

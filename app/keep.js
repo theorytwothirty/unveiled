@@ -11,7 +11,7 @@ APP.root = APP.test ? 'unveiled-test' : 'unveiled';
 KEEP.slot = APP.test ? 'veiltest' : 'veil';
 
 KEEP.blank = function(me){
-  me = {id:'', in:0, name:'', sent:0, ans:{}};
+  me = {id:'', in:0, name:'', sent:0, rooms:{}, ans:{}};
   ASK.list.forEach(q => { me.ans[q.key] = {text:'', share:!!q.share} });
   return me;
 };
@@ -20,7 +20,7 @@ KEEP.load = function(raw, me){
   try{ raw = JSON.parse(localStorage[KEEP.slot] || 'null') }catch(e){ raw = null }
   me = KEEP.blank();
   if(!raw || 'object' !== typeof raw){ return me }
-  me.id = raw.id || ''; me.in = raw.in || 0; me.name = raw.name || ''; me.sent = raw.sent || 0;
+  me.id = raw.id || ''; me.in = raw.in || 0; me.name = raw.name || ''; me.sent = raw.sent || 0; me.rooms = raw.rooms || {};
   ASK.list.forEach(q => { Object.assign(me.ans[q.key], (raw.ans || {})[q.key]) });
   return me;
 };
@@ -31,7 +31,7 @@ KEEP.save = function(){
 
 // forget the answers, but stay in the group
 KEEP.wipe = function(was){
-  was = APP.me.in; APP.me = KEEP.blank(); APP.me.in = was; KEEP.save();
+  was = APP.me; APP.me = KEEP.blank(); APP.me.in = was.in; APP.me.rooms = was.rooms; KEEP.save();
 };
 
 // the one place answers change

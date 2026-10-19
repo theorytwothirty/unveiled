@@ -15,7 +15,8 @@ GRP.ask = function(body){
 GRP.join = async function(pass, got){
   got = await GRP.ask({do:'join', pass:pass});
   APP.me.in = got.room || Date.now();
-  APP.me.sent = got.mine ? (APP.me.sent || Date.now()) : 0;
+  APP.me.rooms = APP.me.rooms || {};
+  APP.me.sent = got.mine || APP.me.rooms[APP.me.in] ? (APP.me.sent || Date.now()) : 0;
   APP.keep.save();
   return got;
 };
@@ -23,6 +24,7 @@ GRP.join = async function(pass, got){
 GRP.send = async function(me, got){
   got = await GRP.ask({do:'put', name:me.name, ans:me.ans});
   me.id = got.id; me.sent = Date.now();
+  (me.rooms = me.rooms || {})[me.in] = me.sent;
   APP.keep.save();
   return got;
 };
@@ -35,6 +37,7 @@ GRP.one = who => GRP.ask({do:'one', who:who});
 
 GRP.cut = async function(){
   await GRP.ask({do:'cut'});
+  delete (APP.me.rooms || {})[APP.me.in];
   APP.keep.wipe();
 };
 }());

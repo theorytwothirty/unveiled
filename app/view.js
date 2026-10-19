@@ -27,6 +27,7 @@ VIEW.show = async function(spot, how, seq, body, old, el){
   await kit.fetch('view/' + spot.at + '.html', body, el).catch(VIEW.miss);
   if(seq !== VIEW.seq){ return el !== old && el.remove() }
   VIEW.el = el; el.tag('out', -1);
+  APP.shown && APP.shown(spot, el);
   if(old && old !== el){ setTimeout(() => old.remove(), 400) }
 };
 

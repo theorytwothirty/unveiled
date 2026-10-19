@@ -14,17 +14,28 @@ act.join = async function(c, ring, card){
   ring = await API.derive(c.ask.pass, root(c));
   API.keep(root(c), ring);
   'unveiled-test' === root(c) && SEED.plant({ask: c.ask, ring: ring, node: NET.gun.get(root(c)).get(ring.room)});
-  card = await API.card({ask: c.ask, ring: ring}, (await NET.pair()).pub);
+  card = await API.card({ask: c.ask, ring: ring}, (await NET.pair()).pub, 1000);
   c.res.end({room: ring.room.slice(0, 16), mine: !!card});
 };
 
+// answers fast with whoever is already known; everyone else streams in through API.live
 act.all = async function(c, got, jobs, seen, list){
   got = {}; jobs = [];
-  seen = await NET.each(c.node.get('people'), pub => jobs.push(API.card(c, pub).then(card => { card && (got[pub] = card) })), 900, 3000);
-  await Promise.race([Promise.all(jobs), new Promise(ok => setTimeout(ok, 1200))]);
+  API.live(c);
+  seen = await NET.each(c.node.get('people'), pub => jobs.push(API.card(c, pub).then(card => { card && (got[pub] = card) })), 300, 1200);
+  await Promise.race([Promise.all(jobs), new Promise(ok => setTimeout(ok, 600))]);
   list = Object.keys(got).filter(pub => seen[pub]).sort((a, b) => got[a].at - got[b].at)
     .map(pub => ({id: pub, name: got[pub].name, told: API.told(got[pub])}));
   c.res.end({list: list, all: API.keys.length, told: list.reduce((n, one) => n + one.told, 0)});
+};
+
+// one watcher per group: each person who appears, changes, or leaves is said as a 'person' event
+API.live = function(c, room){
+  room = c.ring.room; if(API.live[c.ask.root + room]){ return } API.live[c.ask.root + room] = 1;
+  c.node.get('people').map().on((v, pub) => {
+    if(!v){ return kit.say({room: room.slice(0, 16), id: pub, gone: 1}, 'person') }
+    API.card(c, pub).then(card => card && kit.say({room: room.slice(0, 16), id: pub, name: card.name, told: API.told(card)}, 'person'));
+  });
 };
 
 act.one = async function(c, card, ans){
