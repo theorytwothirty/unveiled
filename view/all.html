@@ -3,7 +3,7 @@
 
 <div class="leaf wide">
   <header class="pile lead rise">
-    <p class="kick">Members only</p>
+    <div class="side ends"><p class="kick">Members only</p><button class="link swap" id="swap">Switch group ↺</button></div>
     <h1 class="big wine">The Unveiled Collective</h1>
     <p class="sub">Get to know the people behind the names.</p>
     <p class="kick tally" name="tally"></p>
@@ -48,6 +48,7 @@
 .foot { gap: 0.75rem; padding: 2.5rem 0 max(2rem, env(safe-area-inset-bottom)); }
 .wrap { flex-wrap: wrap; }
 #cut.sure { color: var(--wine); font-weight: 500; }
+.swap { padding-right: 0; color: var(--wine); }
 </style>
 
 <script>
@@ -76,6 +77,7 @@ ALL.card = function(one, me, el){
 };
 
 mine.onclick = () => kit.say({to:'mine'}, 'go');
+swap.onclick = () => kit.say({to:'swap'}, 'go');
 cut.onclick = function(){
   if(!cut.classList.contains('sure')){ cut.tag('sure', 1); cut.textContent = 'Tap again to delete for good'; return }
   kit.say({to:'cut'}, 'go');

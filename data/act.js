@@ -8,12 +8,14 @@ act.ping = 1; // answered in data/api.html before any key is needed
 
 // any password works, nothing to set up: it becomes the key that encrypts what you save,
 // and you'll see exactly the cards that were saved with the same password
-act.join = async function(c, ring){
+// replies with which group this is, and whether this browser already shared a card in it
+act.join = async function(c, ring, card){
   if(!c.ask.pass){ return fail(c, 400, 'password needed') }
   ring = await API.derive(c.ask.pass, root(c));
   API.keep(root(c), ring);
   'unveiled-test' === root(c) && SEED.plant({ask: c.ask, ring: ring, node: NET.gun.get(root(c)).get(ring.room)});
-  c.res.end({ok: 1});
+  card = await API.card({ask: c.ask, ring: ring}, (await NET.pair()).pub);
+  c.res.end({room: ring.room.slice(0, 16), mine: !!card});
 };
 
 act.all = async function(c, got, jobs, seen, list){

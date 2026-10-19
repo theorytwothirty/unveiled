@@ -6,7 +6,7 @@ var pad = n => (n < 10 ? '0' : '') + n;
 
 var page = APP.page = {};
 page.hello = () => ({sent: !!me().sent});
-page.pass = spot => ({test: APP.test, edit: !!spot.edit});
+page.pass = spot => ({test: APP.test, edit: !!(spot.edit || spot.swap)});
 page.name = spot => ({name: me().name, edit: !!spot.edit});
 page.dark = () => ({dark: true});
 page.done = () => ({name: me().name});
@@ -32,9 +32,11 @@ go.begin = () => show({at:'name'});
 // the password is the door: it is what everything you share gets encrypted with
 go.pass = async d => {
   try{ await APP.grp.join(d.pass) }catch(err){ return kit.say({err: 1}, 'oops', APP.view.el) }
-  APP.spot.edit ? history.back() : show({at:'hello'}, 'swap');
+  APP.spot.edit ? history.back() : show(APP.home(), 'swap');
 };
 go.repass = () => show({at:'pass', edit:1});
+// back to the door to enter another password: lands in that group's gallery, or at Welcome if I'm new there
+go.swap = () => show({at:'pass', swap:1});
 go.name = d => { me().name = (d.name || '').trim().slice(0, 40); APP.keep.save();
   APP.spot.edit ? history.back() : show({at:'card', i:0}) };
 go.next = (d, i) => { APP.keep.put(d.key, d.ans); i = APP.spot.i + 1;
@@ -64,7 +66,7 @@ kit.ear('go', function(eve, d){
 
 APP.grp.warm();
 // nothing opens until the password is in, and the door only reopens on purpose (to switch password)
-APP.lock = spot => me().in ? 'pass' === spot.at && !spot.edit : 'pass' !== spot.at;
+APP.lock = spot => me().in ? 'pass' === spot.at && !spot.edit && !spot.swap : 'pass' !== spot.at;
 APP.home = () => !me().in ? {at:'pass'} : me().sent ? {at:'all'} : {at:'hello'};
 show(me().in && history.state && history.state.at ? history.state : APP.home(), 'swap');
 }());

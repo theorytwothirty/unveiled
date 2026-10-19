@@ -11,9 +11,13 @@ GRP.ask = function(body){
   });
 };
 
-GRP.join = async function(pass){
-  await GRP.ask({do:'join', pass:pass});
-  APP.me.in = Date.now(); APP.keep.save();
+// a password is a group: remember which one, and whether my card is already in it
+GRP.join = async function(pass, got){
+  got = await GRP.ask({do:'join', pass:pass});
+  APP.me.in = got.room || Date.now();
+  APP.me.sent = got.mine ? (APP.me.sent || Date.now()) : 0;
+  APP.keep.save();
+  return got;
 };
 
 GRP.send = async function(me, got){

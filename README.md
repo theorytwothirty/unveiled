@@ -15,7 +15,7 @@ python3 -m http.server 8077
 Then open http://localhost:8077.
 
 - **Test vs real:** `localhost`, `127.0.0.1` and any URL with `?test` use the GUN root `unveiled-test`. Anything else uses `unveiled`. The first time a password is used in the test root, the four fictional people (Alex, Jordan, Sam, Riley) are planted for it. They never appear in the real root.
-- **The password:** nothing to set up. Whatever password you share with friends *is* the group. Everyone types it on the entry page, the first thing the site shows. Their card is saved encrypted with it, and the gallery shows exactly the cards saved with the same password. A typo just means you see nobody, and your card is invisible to the others; *Use a different group password* on the review screen fixes it.
+- **The password:** nothing to set up. Whatever password you share with friends *is* the group. Everyone types it on the entry page, the first thing the site shows. Their card is saved encrypted with it, and the gallery shows exactly the cards saved with the same password. A typo just means you see nobody, and your card is invisible to the others; *Use a different group password* on the review screen fixes it. To move between groups, tap *Switch group* at the top of the gallery and enter another password. If you've already shared in that group you land in its gallery; if not, you start at Welcome.
 
 ## How the privacy works
 
