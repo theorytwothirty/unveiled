@@ -18,7 +18,6 @@
   </div>
   <div class="pile own">
     <textarea class="field" id="text" name="text" rows="5" enterkeyhint="enter"></textarea>
-    <label class="flip" id="ask"><input type="checkbox" id="share"><span class="no">Private — only you can see this.</span><span class="yes">I’m comfortable sharing this with the group.</span></label>
   </div>
   <div class="bar">
     <button class="ghost round" id="back" aria-label="Back">←</button>
@@ -43,7 +42,6 @@
 .tips li { display: block; color: var(--soft); padding-left: 1.1rem; }
 .tips li::before { content: '—'; position: absolute; left: 0; color: var(--rose); }
 .own { gap: 0.9rem; }
-.flip { min-height: 2.5rem; }
 </style>
 
 <script>
@@ -56,8 +54,6 @@ var CARD = {};
 CARD.draw = function(c){
   kit.bind(document, {n: c.n, q: c.q, text: c.text || ''});
   text.placeholder = c.hold || '';
-  share.checked = !!c.share;
-  ask.hidden = !c.ask;
   steps.all('i').forEach((el, i) => el.tag('on', i <= c.i ? 1 : -1));
   list.replaceChildren(); (c.tips || []).forEach(CARD.tip);
   tips.hidden = !(c.tips || []).length;
@@ -71,7 +67,7 @@ CARD.tip = function(words, li){
   li = tip.content.firstElementChild.cloneNode(true);
   li.textContent = words; list.pin(li);
 };
-CARD.ans = () => ({text: text.value, share: share.checked});
+CARD.ans = () => ({text: text.value}); // sharing is chosen on the review screen
 CARD.say = (to, ans) => kit.say({to: to, key: CARD.now.key, ans: ans || CARD.ans()}, 'go');
 
 next.onclick = () => CARD.say('next');

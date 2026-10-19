@@ -14,7 +14,7 @@ page.card = function(spot, q, a){
   q = ASK.list[spot.i]; a = me().ans[q.key];
   return {i: spot.i, n: pad(spot.i + 1) + ' / ' + pad(ASK.list.length), key: q.key, tips: q.tips,
     q: {mark: q.mark, word: q.word, head: q.head, text: q.text, note: q.note || null},
-    hold: q.hold, text: a.text, share: a.share, ask: !!q.ask, dark: !!q.dark, edit: !!spot.edit};
+    hold: q.hold, text: a.text, dark: !!q.dark, edit: !!spot.edit};
 };
 page.look = () => ({name: me().name, sent: !!me().sent, list: ASK.list.map((q, i) => ({
   i: i, key: q.key, mark: q.mark, word: q.word, text: me().ans[q.key].text, share: me().ans[q.key].share, deep: !!q.dark }))});
