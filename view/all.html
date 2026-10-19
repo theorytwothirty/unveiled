@@ -1,0 +1,83 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<div class="leaf wide">
+  <header class="pile lead rise">
+    <p class="kick">Members only</p>
+    <h1 class="big wine">The Unveiled Collective</h1>
+    <p class="sub">Get to know the people behind the names.</p>
+    <p class="kick tally" name="tally"></p>
+    <p class="fine" id="slow" hidden>Still gathering everyone. Come back in a moment to see more.</p>
+  </header>
+  <div class="grid" id="grid"></div>
+  <footer class="pile foot">
+    <div class="side wrap">
+      <button class="ghost" id="mine">Edit my answers</button>
+      <button class="link" id="cut">Delete my answers</button>
+    </div>
+    <p class="fine">What’s shared here stays here. Please don’t screenshot or pass on anyone’s answers without their permission.</p>
+  </footer>
+</div>
+
+<template id="model">
+  <button class="card person">
+    <span class="side ends"><span class="mono" name="mono"></span><span class="kick"><span class="you">You · </span><span name="told"></span></span></span>
+    <span class="name" name="name"></span>
+    <span class="line" name="line"></span>
+    <span class="rule"></span>
+    <span class="more">Discover <b name="first"></b> →</span>
+  </button>
+</template>
+
+<style>
+.lead { gap: 0.9rem; padding: 2rem 0 2.25rem; }
+.big { font-size: clamp(2.8rem, 12vw, 5.5rem); text-transform: uppercase; }
+.tally { color: var(--wine); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+.person { display: grid; gap: 0.6rem; text-align: left; place-items: stretch; cursor: pointer; color: var(--ink);
+  border: 0; padding: 1.5rem; animation: rise 0.7s var(--ease) both; transition: transform 0.35s var(--ease), box-shadow 0.35s; }
+.person:hover, .person:focus-visible { transform: translateY(-4px); background: var(--card); color: var(--ink);
+  box-shadow: 0 1px 2px rgba(41,37,37,0.04), 0 22px 50px -18px rgba(114,47,69,0.28); }
+.person:active { transform: scale(0.98); }
+.person::after { content: ''; position: absolute; inset: 0.5rem; border-radius: 1.1rem; border: 1px solid var(--line); pointer-events: none; }
+.person:nth-child(2) { animation-delay: 0.08s; } .person:nth-child(3) { animation-delay: 0.16s; } .person:nth-child(n+4) { animation-delay: 0.24s; }
+.you { display: none; color: var(--wine); } .person.mine .you { display: inline; }
+.name { font-family: var(--serif); font-size: 2.2rem; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 0.75rem; }
+.line { font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--soft); min-height: 1.6em; }
+.more { color: var(--wine); font-weight: 500; }
+.foot { gap: 0.75rem; padding: 2.5rem 0 max(2rem, env(safe-area-inset-bottom)); }
+.wrap { flex-wrap: wrap; }
+#cut.sure { color: var(--wine); font-weight: 500; }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  var c = req.body || {}, n = (c.list || []).length;
+  kit.bind(document, {
+    tally: n + (1 === n ? ' person. ' : ' people. ') + (c.told || 0) + ' stories. A little more connection.'
+  });
+  slow.hidden = !c.slow; ALL.all = c.all || 10;
+  grid.replaceChildren();
+  (c.list || []).forEach(one => ALL.card(one, c.me));
+  res.send(document);
+});
+
+var ALL = {};
+ALL.lines = ['A little mystery. A little magic.', 'Soft words. Bold heart.', 'Curious, and not afraid to say so.',
+  'Still waters. Warm currents.', 'Equal parts honey and heat.', 'A slow burn worth waiting for.', 'Open door. Gentle hands.'];
+ALL.pick = (name, h) => { h = 0; for(var i = 0; i < name.length; i++){ h = (h * 31 + name.charCodeAt(i)) >>> 0 } return ALL.lines[h % ALL.lines.length] };
+ALL.card = function(one, me, el){
+  el = kit.bind(model.content.firstElementChild.cloneNode(true), {
+    mono: one.name.charAt(0).toUpperCase(), name: one.name, first: one.name, line: ALL.pick(one.name),
+    told: one.told + ' of ' + ALL.all + ' shared' });
+  el.tag('mine', one.id === me ? 1 : -1);
+  el.onclick = () => kit.say({to:'one', who: one.id}, 'go');
+  grid.pin(el);
+};
+
+mine.onclick = () => kit.say({to:'mine'}, 'go');
+cut.onclick = function(){
+  if(!cut.classList.contains('sure')){ cut.tag('sure', 1); cut.textContent = 'Tap again to delete for good'; return }
+  kit.say({to:'cut'}, 'go');
+};
+</script>

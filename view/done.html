@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<div class="leaf">
+  <div class="fill rise">
+    <span class="seal"><span class="mono" name="mono">A</span></span>
+    <h1 class="big wine">Beautiful.</h1>
+    <p class="head caps">You’re unveiled.</p>
+    <p class="sub">Now, let’s discover a little more about everyone else.</p>
+    <p class="fine">Please keep what you read here between us — no screenshots, no sharing without permission.</p>
+  </div>
+  <div class="bar">
+    <button class="go grow" id="next">Explore the group <span>→</span></button>
+  </div>
+</div>
+
+<style>
+.fill { gap: 1.25rem; text-align: left; }
+.big { font-style: italic; letter-spacing: 0; }
+.seal { display: block; width: max-content; animation: spin 1.2s var(--ease) both; }
+.seal .mono { width: 5.5rem; height: 5.5rem; font-size: 2.4rem; }
+@keyframes spin { from { transform: rotate(-90deg) scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  var name = (req.body || {}).name || '';
+  res.send(kit.bind(document, {mono: name.charAt(0).toUpperCase()}));
+});
+next.onclick = () => kit.say({to:'all'}, 'go');
+</script>

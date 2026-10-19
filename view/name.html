@@ -1,0 +1,34 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<form class="leaf" id="form" autocomplete="off">
+  <div class="fill rise">
+    <p class="kick">First things first</p>
+    <h1 class="head">What should we call you?</h1>
+    <p class="lede">Enter your name or nickname.</p>
+    <input class="field line" id="who" name="name" placeholder="Your name…" maxlength="40" required autocapitalize="words" enterkeyhint="next">
+    <p class="fine">This is how your answers will appear to the group.</p>
+  </div>
+  <div class="bar">
+    <button class="ghost round" type="button" id="back" aria-label="Back">←</button>
+    <button class="go grow" id="next" disabled>Continue <span>→</span></button>
+  </div>
+</form>
+
+<style>
+.fill { gap: 1.1rem; }
+.field.line { margin-top: 1rem; }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  var body = req.body || {};
+  next.firstChild.textContent = body.edit ? 'Save ' : 'Continue ';
+  kit.bind(document, {name: body.name || ''});
+  who.oninput();
+  res.send(document);
+});
+who.oninput = () => { next.disabled = !who.value.trim() };
+form.onsubmit = eve => { eve.preventDefault(); who.value.trim() && kit.say({to:'name', name:who.value}, 'go') };
+back.onclick = () => kit.say({to:'back'}, 'go');
+</script>

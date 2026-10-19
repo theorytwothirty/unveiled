@@ -1,0 +1,51 @@
+<script src="../gun/kit/web.js"></script><script>console.off = 1</script>
+<!-- The only code that touches group data. Runs as a hidden component; the screens never see GUN.
+     Everything leaving this browser is encrypted with a key stretched from the group password.
+     Private answers never leave at all. Each card is signed by its browser's own key, so only it can change it. -->
+<script src="https://cdn.jsdelivr.net/npm/gun@0.2020.1241/gun.js" integrity="sha384-kbwmlcfKNZA6XzoIlQUaH+9lLpNh5TWrzzDmSlCpY48SEs49CCDQs50Q6x2xAl4v" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/gun@0.2020.1241/sea.js" integrity="sha384-FNQ9zPExoUHPGb9CGB4BPoSFHdD4nVVE7RbcrlzKHs1Ioxbd/25bKyvaTa/5zZ1v" crossorigin="anonymous"></script>
+<script src="net.js"></script>
+<script src="seed.js"></script>
+<script>
+var API = {keys: 'rbdsmafkpo'.split(''), roots: ['unveiled', 'unveiled-test'], act: {}};
+
+API.clean = function(raw, out){
+  raw = raw || {}; out = {ans: {}};
+  'do root who pass make'.split(' ').forEach(k => { out[k] = String(raw[k] || '').slice(0, 200) });
+  out.name = String(raw.name || '').trim().slice(0, 40);
+  API.keys.forEach(k => { var a = (raw.ans || {})[k] || {};
+    out.ans[k] = {text: String(a.text || '').slice(0, 4000), share: true === a.share} });
+  return out;
+};
+
+// derived keys per group, kept in this browser so the password is asked once; the password itself is never stored
+API.ring = function(){ try{ return JSON.parse(localStorage.veilring || '{}') }catch(e){ return {} } };
+API.keep = function(root, ring, all){ all = API.ring(); all[root] = ring; localStorage.veilring = JSON.stringify(all) };
+
+// the stretched key encrypts; a hash of it names the group's place, so nobody finds it without the password
+API.derive = async function(pass, root, key){
+  key = await SEA.work(pass, 'unveiled/' + root, null, {iterations: 250000});
+  return {key: key, room: await SEA.work(key, 'room', null, {name: 'SHA-256'})};
+};
+
+API.card = async function(c, pub, enc, card){
+  enc = await NET.seek(NET.gun.get('~' + pub).get(c.ask.root).get(c.ring.room).get('card'), 2500);
+  card = enc && await SEA.decrypt(enc, c.ring.key);
+  return card && 'object' === typeof card && card.name ? card : null;
+};
+API.told = card => API.keys.filter(k => card.ans && card.ans[k] && card.ans[k].text).length;
+</script>
+<script src="act.js"></script>
+<script>
+// registered last, once every action exists; kit holds earlier requests until now
+kit.createServer(async function(req, res){
+  var c = {ask: API.clean(req.body), res: res}, fn = API.act[c.ask.do];
+  if(!fn){ res.status = 400; return res.end('unknown') }
+  if('ping' === c.ask.do){ return res.end({ok: 1}) }
+  if(!API.roots.includes(c.ask.root)){ res.status = 400; return res.end('unknown group') }
+  c.ring = API.ring()[c.ask.root];
+  if(!c.ring && 'join' !== c.ask.do){ res.status = 401; return res.end('password needed') }
+  if(c.ring){ c.node = NET.gun.get(c.ask.root).get(c.ring.room) }
+  return fn(c);
+});
+</script>

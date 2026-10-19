@@ -1,0 +1,93 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+<script src="../ask.js"></script>
+
+<div class="leaf">
+  <nav class="side"><button class="link back" id="back">← The collective</button></nav>
+  <header class="pile lead rise">
+    <span class="mono" name="mono"></span>
+    <h1 class="big" name="name"></h1>
+    <p class="sub" name="line"></p>
+  </header>
+  <section class="list" id="core"></section>
+  <section class="night">
+    <div class="pile">
+      <p class="kick">After Dark</p>
+      <h2 class="head">There’s always more to discover.</h2>
+    </div>
+    <div class="list" id="deep"></div>
+    <button class="ghost" id="home">← Back to the collective</button>
+  </section>
+</div>
+
+<template id="model">
+  <article class="sect">
+    <p class="side"><span class="mark" name="mark"></span><span class="kick">— <span name="word"></span></span></p>
+    <p class="quote" name="text"></p>
+    <p class="hush">Keeping this one private.</p>
+  </article>
+</template>
+<template id="cover">
+  <button class="peek" aria-expanded="false">
+    <span class="kick"><span name="n"></span> — <span name="word"></span></span>
+    <span class="veil" name="text"></span>
+    <span class="tap">Tap to reveal →</span>
+    <span class="hush">Keeping this one private.</span>
+  </button>
+</template>
+
+<style>
+.back { padding-left: 0; }
+.lead { gap: 0.6rem; padding: 1rem 0 2rem; }
+.big { font-size: clamp(3rem, 15vw, 5.5rem); text-transform: uppercase; color: var(--ink); }
+.list { display: grid; gap: 0; }
+.sect { display: grid; gap: 0.5rem; padding: 1.4rem 0; border-top: 1px solid var(--line); }
+.mark { font-family: var(--serif); font-size: 3rem; font-weight: 700; line-height: 1; color: var(--wine); min-width: 2.8rem; }
+.quote { font-family: var(--serif); font-size: 1.35rem; line-height: 1.45; white-space: pre-wrap; }
+.quote::before { content: '“'; } .quote::after { content: '”'; }
+.hush { display: none; font-family: var(--serif); font-style: italic; font-size: 1.2rem; color: var(--soft); }
+.hid .hush { display: block; }
+.night { --bg: #26111C; --ink: #F5ECE7; --wine: #E3B3BB; --soft: rgba(245,236,231,0.66); --line: rgba(245,236,231,0.16);
+  background: radial-gradient(120% 80% at 80% 0%, #4A1F33, var(--bg)); color: var(--ink); display: grid; gap: 1.5rem;
+  margin: 2rem -1.5rem 0; max-width: none; padding: 2.5rem 1.5rem max(2rem, env(safe-area-inset-bottom)); border-radius: 2rem 2rem 0 0; }
+.night .list { gap: 0.9rem; }
+.peek { display: grid; gap: 0.75rem; text-align: left; place-items: stretch; padding: 1.5rem; border-radius: 1.5rem; cursor: pointer;
+  color: var(--ink); background: rgba(255,255,255,0.05); border: 1px solid var(--line); overflow: hidden; }
+.peek:hover { background: rgba(255,255,255,0.08); color: var(--ink); }
+.veil { font-family: var(--serif); font-size: 1.4rem; line-height: 1.4; white-space: pre-wrap; filter: blur(9px); opacity: 0.55;
+  user-select: none; transition: filter 0.9s var(--ease), opacity 0.9s var(--ease), transform 0.9s var(--ease); transform: scale(0.98); }
+.tap { color: var(--wine); font-weight: 500; transition: opacity 0.4s, transform 0.4s var(--ease); }
+.peek.open { cursor: default; animation: bloom 0.9s var(--ease); }
+.peek.open .veil { filter: none; opacity: 1; transform: none; user-select: text; }
+.peek.open .tap { opacity: 0; transform: translateY(0.5rem); height: 0; }
+.peek.hid { cursor: default; } .peek.hid .tap, .peek.hid .veil { display: none; }
+@keyframes bloom { 40% { box-shadow: 0 0 0 1px var(--wine), 0 0 2.5rem -0.5rem var(--wine); } }
+#home { color: var(--ink); margin-top: 1rem; } #home:hover { color: var(--ink); }
+</style>
+
+<script src="peek.js"></script>
+<script>
+kit.createServer(function(req, res){
+  var c = req.body || {}, ans = c.ans || {};
+  kit.bind(document, {name: c.name, mono: (c.name || '').charAt(0).toUpperCase(), line: ONE.line(c.told || 0)});
+  core.replaceChildren(); deep.replaceChildren();
+  ASK.core.forEach(q => ONE.part(q, ans[q.key] || {hid: 1}));
+  ASK.deep.forEach((q, i) => ONE.peek(q, ans[q.key] || {hid: 1}, i));
+  scrollTo(0, 0);
+  res.send(document);
+});
+
+var ONE = {};
+ONE.line = n => n >= 8 ? 'An open book.' : n >= 5 ? 'An open book. Almost.' : 'A beautiful mystery.';
+ONE.part = function(q, a, el){
+  el = kit.bind(model.content.firstElementChild.cloneNode(true), {mark: q.mark, word: q.word, text: a.text || null});
+  el.tag('hid', a.text ? -1 : 1); core.pin(el);
+};
+ONE.peek = function(q, a, i, el){
+  el = kit.bind(cover.content.firstElementChild.cloneNode(true), {n: '0' + (i + 1), word: q.peek, text: a.text || null});
+  el.tag('hid', a.text ? -1 : 1); el.disabled = !a.text; deep.pin(el);
+};
+
+back.onclick = () => kit.say({to:'back'}, 'go');
+home.onclick = () => kit.say({to:'all'}, 'go');
+</script>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="UTF-8">
+<title>UNVEILED</title>
+<meta name="description" content="A little more about us.">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#FAF7F2">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="gun/kit/web.css"><link rel="stylesheet" href="app.css">
+<script src="gun/kit/web.js"></script>
+<script>console.off = 1 // kit shows logs on top of the page on phones; friends should never see them</script>
+
+<template id="frame"><iframe class="stage out" title="UNVEILED"></iframe></template>
+
+<style>
+.stage { position: fixed; inset: 0; width: 100%; height: 100% !important; min-height: 0; border: 0;
+  color: var(--ink); background: transparent; opacity: 1; transform: none;
+  transition: opacity 0.32s var(--ease), transform 0.45s var(--ease); }
+/* never exactly 0: kit treats a fully transparent frame as hidden and locks its scroll */
+.stage.out { pointer-events: none; opacity: 0.01; transform: translateY(10px); transition-duration: 0.22s; }
+</style>
+
+<script src="gun/kit/dom.js"></script>
+<script src="ask.js"></script>
+<script src="app/keep.js"></script>
+<script src="app/view.js"></script>
+<script src="app/group.js"></script>
+<script src="app/flow.js"></script>
+</html>

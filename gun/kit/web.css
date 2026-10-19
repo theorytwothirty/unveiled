@@ -1,0 +1,478 @@
+:root {
+  --cs: 16pt;
+  --mood: white;
+  --m00d: 100%,100%,100%;
+  --fill: var(--mood);
+  --blur: 5px;
+  --drip: center;
+  --font: system-ui, sans-serif;
+  --time: 0.3s;
+  --oval: 2em;
+  --pop: #BF00FF;
+  --err: #ff4757;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --mood: black; --m00d: 0,0,0; }
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body, iframe, frame { overflow-x: hidden; }
+html, body /*, main, .page*/ {
+	margin: 0;
+	padding: 0;
+  gap: 0.5em;
+  line-height: 1.5;
+  min-height: 100vh;
+  min-height: 100dvh;
+  color: black;
+  color: var(--pop);
+	position: relative;
+  font-family: var(--font);
+  font-size: max(16pt, 2vw);
+  font-size: 16pt;
+  font-size: var(--cs);
+  transition: all 0.3s;
+  transition: all var(--time);
+  background-color: transparent;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  scrollbar-width: thin;
+  scrollbar-color: var(--pop) transparent;
+  touch-action: manipulation;
+} body, main { display: grid; place-items: var(--drip); }
+:where(html.part), :where(html.part) body { min-height: 0; }
+:where(html.part) body { height: max-content; }
+html.part { scrollbar-gutter: stable; }
+/*.page { dis-play:none } .page:target { display:grid; }*/
+main, iframe.page {
+  position: absolute; inset: 0;
+  width: 100%; min-height: 100vh; min-height: 100dvh;
+}
+pre, code, kbd, samp { font: inherit; }
+div, ul, ol, li, a, p, form, button, input, textarea, img, dialog[open], frame, iframe, kit, tin, belt, tray {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  gap: 0.5em;
+  position: relative;
+  vertical-align: inherit;
+  display: grid; place-items: var(--drip);
+  -webkit-transition: all var(--time);
+  transition: all 0.3s;
+  transition: all var(--time);
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
+  max-width: 100%;
+  font: inherit;
+}
+a, p { display: inline-block; }
+
+kit {
+  padding: 0;
+  background: transparent;
+  z-index: 101;
+  overflow-y: auto;
+  overflow-x: visible;
+  scrollbar-width: none;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: max-content;
+  animation: none !important;
+  height: 100vh;
+  pointer-events: none;
+  -ms-overflow-style: none;
+}
+kit::before {
+  content: " ";
+  height: calc(100vh - 4.5em);
+  width: 100%;
+}
+kit tin {
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  animation: none !important;
+}
+kit belt {
+  background: transparent;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  overflow-x: auto;
+  overflow-y: visible;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  width: 100vw;
+  max-width: none;
+  pointer-events: auto; /* the belt row is the gesture surface — spacer taps must not fall through dead */
+  touch-action: auto;
+  -webkit-overflow-scrolling: touch;
+  animation: none !important;
+  -ms-overflow-style: none;
+}
+kit belt::before {
+  content: " ";
+  display: block;
+  flex: 0 0 calc(100vw - 6em);
+  width: calc(100vw - 6em);
+  height: 1px;
+  pointer-events: none;
+}
+kit tray {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: flex-end;
+  width: max-content;
+  max-width: none;
+  pointer-events: auto;
+  touch-action: auto;
+  animation: none !important;
+}
+kit belt::-webkit-scrollbar { display: none; }
+kit::-webkit-scrollbar { display: none; }
+kit button {
+  scroll-snap-align: end;
+  pointer-events: auto;
+  touch-action: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 0 0 auto;
+  text-align: right;
+  -webkit-backdrop-filter: blur(var(--blur) );
+  backdrop-filter: blur(var(--blur));
+  background: rgba(0,0,0,0.2);
+
+  border: 1px solid var(--pop);
+  box-shadow: 0 0 0.1em var(--pop);
+  animation: none !important;
+  padding: 0.5em 1em;
+  border-radius: 0.5em;
+  font-size: 1.1em;
+  font-weight: 900;
+  cursor: pointer;
+  white-space: nowrap;
+  text-shadow: 0 0 5px var(--pop);
+}
+kit button:active {
+  background: var(--pop);
+  color: var(--mood);
+  transform: scale(0.92);
+  text-shadow: none;
+}
+kit button.live {
+  background: var(--pop);
+  color: var(--mood);
+  text-shadow: none;
+}
+
+.ani {
+  animation: stage linear both;
+  animation-timeline: view();
+}
+@keyframes stage {
+  entry 0%  {
+    opacity: 0; transform: scale(0.9);
+  }
+  entry 100%  {
+    opacity: 1; transform: scale(1);
+  }
+  exit 0% {
+    opacity: 1; transform: scale(1);
+  }
+  exit 100% {
+    opacity: 0; transform: scale(0.9);
+  }
+}
+button {
+  user-select: none;
+  -webkit-user-select: none; /* For Safari */
+  -moz-user-select: none;    /* For Firefox */
+  -ms-user-select: none;     /* For IE/Edge */
+} 
+dialog {
+  
+  background: transparent;
+
+}
+dialog::backdrop {
+  background: transparent;
+}
+[contenteditable=true] { outline: none; }
+button, input, textarea {
+  padding: 0.5em 1em;
+  /*display: grid; place-items: var(--drip);*/
+  background-color: inherit;
+  border: inherit;
+  color: inherit;
+  outline: none;
+  text-decoration: inherit;
+}
+input:not([type=button]):not([type=submit]), textarea {
+	width: 100%;
+}
+input:-internal-autofill-selected { background-color: transparent !important; }
+
+a:focus, button:focus, input[type=button]:focus, input[type=submit]:focus, input[type=password]:focus {
+  animation: pulse 2s infinite;
+}
+
+ul, li {
+  list-style: none;
+}
+
+p {
+  padding: 0;
+}
+p + p {
+  padding-top: 0;
+}
+
+/*[contenteditable=true]:empty:before { content: attr(placeholder); }*/
+::placeholder, .hint {
+  color: inherit;
+  opacity: 0.5;
+}
+
+.model, .none { display: none }
+.hide { 
+  opacity: 0;
+  visibility: hidden;
+  transition: all 2s;
+}
+
+.full {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+.max {
+  max-width: 48em;
+}
+.min {
+  min-width: 12em;
+}
+.pad {
+  width: 95%;
+  margin: 5% auto;
+  max-width: 48em;
+  min-width: 12em;
+}
+
+.row {
+  width: 100%;
+}
+.row::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+.col {
+  max-width: 24em;
+  min-width: 12em;
+}
+
+.center {
+  text-align: center;
+  vertical-align: middle;
+  margin-left: auto;
+  margin-right: auto;
+}
+.right {
+  float: right;
+  text-align: right;
+}
+.left {
+  float: left;
+  text-align: left;
+}
+.mid { 
+  margin-left: auto;
+  margin-right: auto; 
+}
+.top {
+  vertical-align: top;
+}
+.low {
+  vertical-align: bottom;
+}
+
+.sap { border-radius: var(--oval); }
+.lip { border: 0.01em solid var(--pop); }
+.rim { margin: 1%; }
+.gap {
+  padding: 3%;
+  padding: clamp(0.5em, 3%, 1.5em);
+}
+.sit { margin-bottom: 0; }
+.stack { line-height: 0; }
+.crack { margin-bottom: 1%; }
+
+.fog {
+  backdrop-filter: blur(var(--blur));
+}
+
+.focus {
+  margin-left: auto;
+  margin-right: auto;
+  float: none;
+  clear: both;
+}
+
+.leak { overflow: visible; }
+.hold { overflow: hidden; }
+
+html:has(.wane),
+body:has(.wane),
+.wane {
+  scroll-timeline-name: --top;
+  scroll-timeline-axis: block;
+}
+body:has(.wane)::before,
+.wane:not(shell)::before {
+  content: "";
+  position: fixed;
+  top: -5em;
+  left: 0;
+  right: 0;
+  height: 5em;
+  background: var(--fill, var(--mood));
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, transparent 100%);
+  z-index: 99;
+  pointer-events: none;
+  animation: wanet linear both;
+  animation-timeline: --top;
+  animation-range: 0 5em;
+}
+body:has(.wane)::after,
+.wane:not(shell)::after {
+  content: "";
+  position: fixed;
+  bottom: -5em;
+  left: 0;
+  right: 0;
+  height: 5em;
+  background: var(--fill, var(--mood));
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 100%);
+  z-index: 99;
+  pointer-events: none;
+  animation: waneb linear both reverse;
+  animation-timeline: --top;
+  animation-range: calc(100% - 5em) 100%;
+}
+.wade {
+  display: block;
+  position: relative;
+  width: 100%;
+  timeline-scope: --side;
+}
+.wade::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2em;
+  width: 2em;
+  background: var(--fill, var(--mood));
+  -webkit-mask-image: linear-gradient(to right, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, transparent 100%);
+  z-index: 99;
+  pointer-events: none;
+  animation: wadel linear both;
+  animation-timeline: --side;
+  animation-range: 0 2em;
+}
+.wade::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: -2em;
+  bottom: 0;
+  width: 2em;
+  background: var(--fill, var(--mood));
+  -webkit-mask-image: linear-gradient(to left, #000 0%, transparent 100%);
+  mask-image: linear-gradient(to left, #000 0%, transparent 100%);
+  z-index: 99;
+  pointer-events: none;
+  animation: wader linear both reverse;
+  animation-timeline: --side;
+  animation-range: calc(100% - 2em) 100%;
+}
+.wade > * {
+  scroll-timeline-name: --side;
+  scroll-timeline-axis: inline;
+}
+@keyframes wanet {
+  to { top: 0; }
+}
+@keyframes waneb {
+  to { bottom: 0; }
+}
+@keyframes wadel {
+  to { left: 0; }
+}
+@keyframes wader {
+  to { right: 0; }
+}
+
+.sky {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 2em, black calc(100% - 2em), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 2em, black calc(100% - 2em), transparent 100%);
+}
+
+.act {
+  /*display: block;*/
+  font-weight: normal;
+  text-decoration: none;
+  -webkit-transition: all var(--time);
+  transition: all var(--time);
+  cursor: pointer;
+}
+
+.unit, .symbol {
+  display: inline-block;
+  vertical-align: inherit;
+}
+.jot { border-bottom: 1px dashed #95B2CA; }
+
+.loud {
+  font-size: 150%;
+}
+.shout {
+  font-size: 36pt;
+  font-size: 6.5vmax;
+}
+
+.ink { color: black; background-color: rgba(100%,100%,100%,0.5); }
+@media (prefers-color-scheme: dark) { .ink { color: white; background-color: rgba(0,0,0,0.5); } }
+
+.dim { background-color: rgba(0,0,0,0.5); }
+.red { background: #ea3224; }
+.green { background: #33cc33; }
+.blue { background: #4D79D8; }
+.yellow { background: #d3a438; }
+.black { background: black; }
+.white { background: white; }
+
+.shade { background: rgba(0%, 0%, 0%, 0.1); }
+.tint { background: rgba(100%, 100%, 100%, 0.1); }
+
+.redt { color: #ea3224; }
+.greent { color: #33cc33; }
+.bluet { color: #4D79D8; }
+.yellowt { color: #d3a438; }
+.blackt { color: black; }
+.whitet { color: white; }
+
+.pulse {
+  animation: pulse 2s infinite;
+} @keyframes pulse {
+  0% {opacity: 1;}
+  50% {opacity: 0.5;}
+  100% {opacity: 1;}
+}

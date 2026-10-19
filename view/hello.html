@@ -1,0 +1,49 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<div class="leaf">
+  <div class="fill rise">
+    <p class="kick">An intimacy card game</p>
+    <h1 class="big wine">UNVEILED</h1>
+    <p class="sub">A little more about us.</p>
+    <span class="rule wide"></span>
+    <div class="pile copy">
+      <p class="head small">Connection begins with curiosity.</p>
+      <p class="lede">Let’s explore what we desire, what makes us feel safe, and what we’d love others to know about us.</p>
+      <p class="lede">Take a few minutes to share as much or as little as you like. You decide which answers the group sees.</p>
+    </div>
+    <div class="pile">
+      <button class="go" id="begin">Let’s begin <span>→</span></button>
+      <button class="ghost" id="peek" hidden>Explore the group</button>
+    </div>
+  </div>
+  <footer class="foot pile">
+    <p class="note">Curiosity is welcome. Honesty is sexy. Consent is everything.</p>
+    <p class="fine">Your answers aren’t promises, invitations, or consent. You can skip any question.</p>
+    <details class="fine">
+      <summary>Privacy</summary>
+      <p>Everything you share is encrypted on your phone with the group password before it leaves. Only people with the password can read it. Answers you keep private never leave your device at all. Sexual health and After Dark answers are private unless you choose otherwise.</p>
+      <p>Please don’t screenshot or pass on anyone’s answers, and never share the password outside the group. Nothing here is used to train AI.</p>
+    </details>
+  </footer>
+</div>
+
+<style>
+.fill { gap: 1.5rem; padding: 2rem 0; }
+.rule.wide { display: block; width: 3rem; height: 1px; background: var(--rose); }
+.head.small { font-size: clamp(1.7rem, 6.5vw, 2.2rem); }
+.copy { gap: 0.6rem; }
+.foot { gap: 0.6rem; padding: 0 0 max(1.5rem, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.foot .note { font-size: 1.15rem; }
+details summary { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; list-style: none; }
+details p { margin-top: 0.5rem; }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  peek.hidden = !(req.body || {}).sent;
+  res.send(document);
+});
+begin.onclick = () => kit.say({to:'begin'}, 'go');
+peek.onclick = () => kit.say({to:'all'}, 'go');
+</script>

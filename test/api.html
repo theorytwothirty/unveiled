@@ -1,0 +1,65 @@
+<!-- Privacy boundary test against the real relay. Open through http://localhost and expect PASS.
+     Runs the real data/api.html component in a hidden frame, in the 'unveiled-test' root, with a throwaway password.
+     Ownership (nobody else can overwrite your card) is checked from a second client by test/forge.js. -->
+<script src="../gun/kit/web.js"></script>
+<pre id="out">WAIT</pre>
+
+<script>
+;(function(TEST){
+var api = '../data/api.html', was = localStorage.veilring;
+TEST.pass = 'test ' + Math.random().toString(36).slice(2);
+TEST.ok = (got, want, note) => { if(got !== want){ throw new Error(note + ': got ' + got + ', want ' + want) } };
+TEST.ask = body => kit.fetch(api, Object.assign({root: 'unveiled-test'}, body));
+TEST.no = (body, code, note) => TEST.ask(body).then(() => { throw new Error(note + ': allowed') }, err => TEST.ok(err.status, code, note));
+TEST.ans = share => {
+  var ans = {};
+  'rbdsmafkpo'.split('').forEach(k => { ans[k] = {text: 'secret ' + k, share: share.includes(k)} });
+  return ans;
+};
+TEST.ring = () => JSON.parse(localStorage.veilring || '{}')['unveiled-test'];
+
+TEST.run = async function(me, all, one, raw, w){
+  TEST.step = 'warm up';
+  await TEST.ask({do: 'ping'});
+
+  TEST.step = 'a password nobody uses finds no group';
+  await TEST.no({do: 'join', pass: TEST.pass}, 404, 'unknown password');
+  await TEST.no({do: 'all', root: 'nope'}, 400, 'only known roots');
+
+  TEST.step = 'start a group';
+  await TEST.ask({do: 'join', pass: TEST.pass, make: 1});
+  TEST.ok(!!TEST.ring().key, true, 'stretched key kept');
+  TEST.ok(JSON.stringify(localStorage).includes(TEST.pass), false, 'password itself never stored');
+
+  TEST.step = 'share';
+  me = await TEST.ask({do: 'put', name: 'Ada', ans: TEST.ans('rbf')});
+
+  TEST.step = 'private answers never leave';
+  one = await TEST.ask({do: 'one', who: me.id});
+  'dsmakpo'.split('').forEach(k => { TEST.ok(JSON.stringify(one).includes('secret ' + k), false, 'private ' + k + ' leaked'); TEST.ok(one.ans[k].hid, 1, 'private ' + k + ' marked') });
+  TEST.ok(one.ans.r.text, 'secret r', 'shared answer visible');
+  w = document.querySelector('iframe').contentWindow;
+  raw = await w.NET.seek(w.NET.gun.get('~' + me.id).get('unveiled-test').get(TEST.ring().room).get('card'), 3000);
+  TEST.ok(0 === String(raw).indexOf('SEA{'), true, 'stored card is encrypted');
+  TEST.ok(/secret|Ada/.test(raw), false, 'no plaintext on the relay');
+  TEST.ok(Object.keys((await w.SEA.decrypt(raw, TEST.ring().key)).ans).join(''), 'rbf', 'only shared answers uploaded');
+
+  TEST.step = 'gallery';
+  all = await TEST.ask({do: 'all'});
+  TEST.ok(all.list.some(p => p.id === me.id && 'Ada' === p.name && 3 === p.told), true, 'listed with shared count');
+  TEST.ok(JSON.stringify(all).includes('secret'), false, 'gallery carries no answers');
+
+  TEST.step = 'a wrong password opens nothing';
+  await TEST.no({do: 'join', pass: TEST.pass + 'x'}, 404, 'wrong password');
+
+  TEST.step = 'delete';
+  await TEST.ask({do: 'cut'});
+  await TEST.no({do: 'one', who: me.id}, 404, 'deleted card gone');
+  all = await TEST.ask({do: 'all'});
+  TEST.ok(all.list.some(p => p.id === me.id), false, 'deleted card unlisted');
+};
+
+TEST.end = () => { was ? (localStorage.veilring = was) : localStorage.removeItem('veilring') };
+TEST.run().then(() => { TEST.end(); out.textContent = 'PASS' }, err => { TEST.end(); out.textContent = 'FAIL ' + TEST.step + ': ' + err.message });
+}({}));
+</script>

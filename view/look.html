@@ -1,0 +1,76 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<div class="leaf">
+  <div class="pile lead rise">
+    <p class="kick">Review</p>
+    <h1 class="head caps">Your cards are on the table.</h1>
+    <p class="sub">Ready to share a little more of yourself?</p>
+    <div class="side ends who"><span class="kick">Appearing as <b class="wine" name="name"></b></span><button class="link" id="rename">Edit name</button></div>
+  </div>
+  <p class="kick sect">The six</p>
+  <div class="deck" id="core"></div>
+  <p class="kick sect">After Dark</p>
+  <div class="deck" id="deep"></div>
+  <div class="pile seal">
+    <p class="fine">Toggle what the group can see. Private answers are never shown to anyone else.</p>
+    <label class="tick"><input type="checkbox" id="ok"><span>I understand that the answers I’ve chosen to share will be visible to other members of this group.</span></label>
+    <p class="fine wine" id="oops" hidden></p>
+  </div>
+  <div class="bar">
+    <button class="ghost round" id="back" aria-label="Back">←</button>
+    <button class="go grow" id="send" disabled>Share my answers <span>→</span></button>
+  </div>
+</div>
+
+<template id="model">
+  <article class="card item">
+    <div class="side ends"><div class="side"><span class="mark" name="mark"></span><span class="kick" name="word"></span></div>
+      <button class="link edit">Edit</button></div>
+    <p class="text" name="text"></p>
+    <p class="text nil">Skipped — nothing to share.</p>
+    <label class="flip"><input type="checkbox"><span class="no">Private</span><span class="yes">Shared with the group</span></label>
+  </article>
+</template>
+
+<style>
+.lead { gap: 0.75rem; padding: 1rem 0 1.5rem; }
+.who { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 0.25rem 0; margin-top: 0.5rem; }
+.sect { padding: 1.25rem 0 0.75rem; }
+.deck { display: grid; gap: 0.9rem; }
+.item { gap: 0.6rem; padding: 1.1rem 1.25rem 0.9rem; }
+.item .link { min-height: 2.75rem; color: var(--wine); }
+.mark { font-family: var(--serif); font-size: 2.8rem; font-weight: 700; line-height: 1; color: var(--wine); min-width: 2.6rem; }
+.text { font-family: var(--serif); font-size: 1.2rem; line-height: 1.4; white-space: pre-wrap; display: -webkit-box;
+  -webkit-line-clamp: 4; line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.text.nil { display: none; font-style: italic; color: var(--soft); }
+.item.skip .text.nil { display: block; } .item.skip .flip { opacity: 0.45; }
+.seal { gap: 0.5rem; padding-top: 1.5rem; }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  var c = req.body || {};
+  kit.bind(document, {name: c.name});
+  core.replaceChildren(); deep.replaceChildren();
+  (c.list || []).forEach(LOOK.row);
+  ok.checked = false; send.disabled = true; oops.hidden = true;
+  res.send(document);
+});
+
+var LOOK = {};
+LOOK.row = function(a, el, box){
+  el = kit.bind(model.content.firstElementChild.cloneNode(true), {mark: a.mark, word: a.word, text: a.text.trim() || null});
+  el.tag('skip', a.text.trim() ? -1 : 1);
+  box = el.all('input')[0]; box.checked = !!a.share;
+  box.onchange = () => kit.say({to:'share', key: a.key, share: box.checked}, 'go');
+  el.all('.edit')[0].onclick = () => kit.say({to:'edit', i: a.i}, 'go');
+  (a.deep ? deep : core).pin(el);
+};
+
+ok.onchange = () => { send.disabled = !ok.checked };
+send.onclick = () => { if(!ok.checked){ return } send.disabled = true; kit.say({to:'send'}, 'go') };
+back.onclick = () => kit.say({to:'back'}, 'go');
+rename.onclick = () => kit.say({to:'rename'}, 'go');
+kit.ear('oops', eve => { oops.textContent = (eve.detail || {}).err || ''; oops.hidden = false; send.disabled = !ok.checked });
+</script>

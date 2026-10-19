@@ -1,0 +1,81 @@
+<link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
+<script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
+
+<div class="leaf">
+  <header class="top">
+    <div class="side ends"><span class="kick" name="n">01 / 10</span><span class="kick wine deep">After Dark</span></div>
+    <div class="steps" id="steps"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </header>
+  <div class="fill rise" id="box" name="q">
+    <div class="side title"><span class="mark" name="mark">R</span><span class="word" name="word">Relationships</span></div>
+    <h1 class="head" name="head"></h1>
+    <p class="lede" name="text"></p>
+    <div class="tips" id="tips">
+      <p class="kick">A little inspiration</p>
+      <ul id="list"></ul>
+    </div>
+    <p class="note" name="note"></p>
+  </div>
+  <div class="pile own">
+    <textarea class="field" id="text" name="text" rows="5" enterkeyhint="enter"></textarea>
+    <label class="flip" id="ask"><input type="checkbox" id="share"><span class="no">Private — only you can see this.</span><span class="yes">I’m comfortable sharing this with the group.</span></label>
+  </div>
+  <div class="bar">
+    <button class="ghost round" id="back" aria-label="Back">←</button>
+    <button class="link" id="skip">Skip</button>
+    <button class="go grow" id="next">Continue <span>→</span></button>
+  </div>
+</div>
+
+<template id="tip"><li></li></template>
+
+<style>
+.top { display: grid; gap: 0.9rem; padding-bottom: 0.5rem; }
+.deep { display: none; } html.dark .deep { display: inline; }
+.steps { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 4px; }
+.steps i { height: 2px; border-radius: 2px; background: var(--line); transition: background-color 0.6s var(--ease); }
+.steps i.on { background: var(--wine); }
+.fill { gap: 1rem; padding: 2rem 0 1.5rem; justify-content: flex-start; }
+.title { gap: 0.25rem 1rem; align-items: baseline; flex-wrap: wrap; }
+.word { font-family: var(--serif); font-weight: 700; font-size: clamp(2rem, 9vw, 3.2rem); line-height: 1; letter-spacing: 0.04em; text-transform: uppercase; color: var(--wine); }
+.mark { font-family: var(--serif); font-size: clamp(6rem, 30vw, 9rem); line-height: 0.78; color: var(--wine); font-weight: 700; letter-spacing: -0.02em; }
+.tips { gap: 0.5rem; padding: 1.1rem 1.25rem; border-left: 1px solid var(--rose); margin: 0.25rem 0; }
+.tips ul { display: grid; gap: 0.35rem; }
+.tips li { display: block; color: var(--soft); padding-left: 1.1rem; }
+.tips li::before { content: '—'; position: absolute; left: 0; color: var(--rose); }
+.own { gap: 0.9rem; }
+.flip { min-height: 2.5rem; }
+</style>
+
+<script>
+kit.createServer(function(req, res){
+  CARD.draw(CARD.now = req.body || {});
+  res.send(document);
+});
+
+var CARD = {};
+CARD.draw = function(c){
+  kit.bind(document, {n: c.n, q: c.q, text: c.text || ''});
+  text.placeholder = c.hold || '';
+  share.checked = !!c.share;
+  ask.hidden = !c.ask;
+  steps.all('i').forEach((el, i) => el.tag('on', i <= c.i ? 1 : -1));
+  list.replaceChildren(); (c.tips || []).forEach(CARD.tip);
+  tips.hidden = !(c.tips || []).length;
+  document.documentElement.tag('dark', c.dark ? 1 : -1);
+  next.firstChild.textContent = c.edit ? 'Save ' : 'Continue ';
+  skip.hidden = !!c.edit;
+  box.tag("rise", -1); void box.offsetWidth; box.tag("rise", 1);
+  scrollTo(0, 0);
+};
+CARD.tip = function(words, li){
+  li = tip.content.firstElementChild.cloneNode(true);
+  li.textContent = words; list.pin(li);
+};
+CARD.ans = () => ({text: text.value, share: share.checked});
+CARD.say = (to, ans) => kit.say({to: to, key: CARD.now.key, ans: ans || CARD.ans()}, 'go');
+
+next.onclick = () => CARD.say('next');
+skip.onclick = () => CARD.say('next', {text: ''});
+back.onclick = () => CARD.say('back');
+</script>
