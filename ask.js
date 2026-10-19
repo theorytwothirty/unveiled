@@ -41,22 +41,22 @@ ASK.list = [
     tips:['Cuddles, reassurance, or conversation?', 'Space, privacy, or sleeping together?', 'A check-in the next day?', 'Food, water, or a little debrief?'],
     note:'Sometimes the moments after matter just as much.', hold:'I feel most cared for when…' },
 
-  { key:'f', mark:'F', word:'Fantasies', share:false, dark:true, peek:'Their deepest fantasy',
+  { key:'f', mark:'F', word:'Fantasies', share:true, dark:true, peek:'Their deepest fantasy',
     head:'What’s your deepest sexual fantasy, if you have one?',
     text:'Something you’ve imagined, something you’re curious about, or something that turns you on.',
     tips:[], note:'', hold:'My fantasy is…' },
 
-  { key:'k', mark:'K', word:'Kinks', share:false, dark:true, peek:'Their kinks',
+  { key:'k', mark:'K', word:'Kinks', share:true, dark:true, peek:'Their kinks',
     head:'Do you have any kinks?',
     text:'Anything playful, unconventional, or particularly exciting to you?',
     tips:[], note:'', hold:'Something I’m into…' },
 
-  { key:'p', mark:'RP', word:'Role Play', share:false, dark:true, peek:'Their favorite role play',
+  { key:'p', mark:'RP', word:'Role Play', share:true, dark:true, peek:'Their favorite role play',
     head:'What’s your favorite role-play scenario, if you have one?',
     text:'A character, dynamic, or scenario you’d enjoy exploring.',
     tips:[], note:'', hold:'I’d love to play…' },
 
-  { key:'o', mark:'+', word:'Anything Else', share:false, dark:true, peek:'Anything else',
+  { key:'o', mark:'+', word:'Anything Else', share:true, dark:true, peek:'Anything else',
     head:'Anything else you’d like to share?',
     text:'A wish, a curiosity, a little confession — whatever feels right.',
     tips:[], note:'', hold:'One more thing…' }
