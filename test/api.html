@@ -22,12 +22,11 @@ TEST.run = async function(me, all, one, raw, w){
   TEST.step = 'warm up';
   await TEST.ask({do: 'ping'});
 
-  TEST.step = 'a password nobody uses finds no group';
-  await TEST.no({do: 'join', pass: TEST.pass}, 404, 'unknown password');
-  await TEST.no({do: 'all', root: 'nope'}, 400, 'only known roots');
+  TEST.step = 'only known roots';
+  await TEST.no({do: 'all', root: 'nope'}, 400, 'unknown root');
 
-  TEST.step = 'start a group';
-  await TEST.ask({do: 'join', pass: TEST.pass, make: 1});
+  TEST.step = 'any password works, no setup';
+  await TEST.ask({do: 'join', pass: TEST.pass});
   TEST.ok(!!TEST.ring().key, true, 'stretched key kept');
   TEST.ok(JSON.stringify(localStorage).includes(TEST.pass), false, 'password itself never stored');
 
@@ -49,8 +48,12 @@ TEST.run = async function(me, all, one, raw, w){
   TEST.ok(all.list.some(p => p.id === me.id && 'Ada' === p.name && 3 === p.told), true, 'listed with shared count');
   TEST.ok(JSON.stringify(all).includes('secret'), false, 'gallery carries no answers');
 
-  TEST.step = 'a wrong password opens nothing';
-  await TEST.no({do: 'join', pass: TEST.pass + 'x'}, 404, 'wrong password');
+  TEST.step = 'another password sees none of it';
+  await TEST.ask({do: 'join', pass: TEST.pass + 'x'});
+  all = await TEST.ask({do: 'all'});
+  TEST.ok(all.list.some(p => p.id === me.id), false, 'card hidden from other password');
+  await TEST.no({do: 'one', who: me.id}, 404, 'card unreadable with other password');
+  await TEST.ask({do: 'join', pass: TEST.pass});
 
   TEST.step = 'delete';
   await TEST.ask({do: 'cut'});

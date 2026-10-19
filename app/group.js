@@ -11,8 +11,8 @@ GRP.ask = function(body){
   });
 };
 
-GRP.join = async function(pass, make){
-  await GRP.ask({do:'join', pass:pass, make:make ? 1 : ''});
+GRP.join = async function(pass){
+  await GRP.ask({do:'join', pass:pass});
   APP.me.in = Date.now(); APP.keep.save();
 };
 

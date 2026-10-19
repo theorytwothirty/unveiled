@@ -11,7 +11,7 @@ var API = {keys: 'rbdsmafkpo'.split(''), roots: ['unveiled', 'unveiled-test'], a
 
 API.clean = function(raw, out){
   raw = raw || {}; out = {ans: {}};
-  'do root who pass make'.split(' ').forEach(k => { out[k] = String(raw[k] || '').slice(0, 200) });
+  'do root who pass'.split(' ').forEach(k => { out[k] = String(raw[k] || '').slice(0, 200) });
   out.name = String(raw.name || '').trim().slice(0, 40);
   API.keys.forEach(k => { var a = (raw.ans || {})[k] || {};
     out.ans[k] = {text: String(a.text || '').slice(0, 4000), share: true === a.share} });

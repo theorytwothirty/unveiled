@@ -6,20 +6,13 @@ var mine = (c, user) => user.get(root(c)).get(c.ring.room).get('card');
 
 act.ping = 1; // answered in data/api.html before any key is needed
 
-// enter the group password. A wrong one finds an empty place, so offer to start a group there instead.
-act.join = async function(c, ring, node, check){
+// any password works, nothing to set up: it becomes the key that encrypts what you save,
+// and you'll see exactly the cards that were saved with the same password
+act.join = async function(c, ring){
   if(!c.ask.pass){ return fail(c, 400, 'password needed') }
   ring = await API.derive(c.ask.pass, root(c));
-  node = NET.gun.get(root(c)).get(ring.room);
-  if(c.ask.make){
-    await NET.save(node.get('check'), await SEA.encrypt('unveiled', ring.key), 2000);
-    'unveiled-test' === root(c) && SEED.plant({ask: c.ask, ring: ring, node: node});
-  } else {
-    check = await NET.seek(node.get('check'), 2500);
-    if(!check){ return fail(c, 404, 'no group') }
-    if('unveiled' !== await SEA.decrypt(check, ring.key)){ return fail(c, 403, 'wrong password') }
-  }
   API.keep(root(c), ring);
+  'unveiled-test' === root(c) && SEED.plant({ask: c.ask, ring: ring, node: NET.gun.get(root(c)).get(ring.room)});
   c.res.end({ok: 1});
 };
 

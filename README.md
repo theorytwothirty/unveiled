@@ -14,8 +14,8 @@ python3 -m http.server 8077
 
 Then open http://localhost:8077.
 
-- **Test vs real:** `localhost`, `127.0.0.1` and any URL with `?test` use the GUN root `unveiled-test`. Anything else uses `unveiled`. When someone starts a new test group, the four fictional people (Alex, Jordan, Sam, Riley) are planted in it. They never appear in the real root.
-- **Starting a group:** the first person enters the password and taps *Start a new group with this password*. Everyone else just enters the same password.
+- **Test vs real:** `localhost`, `127.0.0.1` and any URL with `?test` use the GUN root `unveiled-test`. Anything else uses `unveiled`. The first time a password is used in the test root, the four fictional people (Alex, Jordan, Sam, Riley) are planted for it. They never appear in the real root.
+- **The password:** nothing to set up. Everyone types the same password when they tap *Share my answers*. Their card is saved encrypted with it, and the gallery shows exactly the cards that were saved with the same password. A typo just means you see nobody, and your card is invisible to the others; use *Use a different password* in the review screen to fix it.
 
 ## How the privacy works
 
@@ -39,13 +39,13 @@ Then open http://localhost:8077.
 | `data/act.js` | Its actions: `ping`, `join`, `all`, `one`, `put`, `cut` |
 | `data/net.js` | GUN helpers: relay, timed reads/writes, signing queue, device key |
 | `data/seed.js` | Fictional people for the test root |
-| `view/*.html` | Screens: `hello`, `pass`, `name`, `card`, `dark`, `look`, `done`, `all`, `one` |
+| `view/*.html` | Screens: `hello`, `name`, `card`, `dark`, `look`, `done`, `all`, `one` |
 | `app.css` | Design tokens and shared classes |
 
 ## Tests
 
 - `test/api.html`: open it on `localhost` and expect `PASS`. It runs against the real relay with a throwaway password and checks:
-  - unknown and wrong passwords open nothing
+  - a different password sees none of the cards
   - the password itself is never stored
   - stored cards are ciphertext
   - only shared answers are uploaded
