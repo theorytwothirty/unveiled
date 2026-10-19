@@ -1,28 +1,41 @@
 <link rel="stylesheet" href="../gun/kit/web.css"><link rel="stylesheet" href="../app.css">
 <script src="../gun/kit/web.js"></script><script src="../gun/kit/dom.js"></script>
 
+<!-- The door: the first thing anyone sees. Just the name, and the password. -->
 <form class="leaf" id="form" autocomplete="off">
-  <div class="fill rise">
-    <p class="kick">Members only <span class="wine" id="test" hidden>· Test group</span></p>
-    <h1 class="head">What’s the password?</h1>
-    <p class="lede">The one your host shared with you privately. Everything you share is encrypted with it, and you’ll only see the people who used the same one.</p>
-    <input class="field line" id="pass" type="password" placeholder="Password…" autocomplete="current-password" enterkeyhint="go" required>
-    <p class="fine wine" id="oops" hidden>We couldn’t get things ready. Check your connection and try again.</p>
+  <div class="fill rise gate">
+    <span class="seal"></span>
+    <p class="kick">Members only <span class="wine" id="test" hidden>· Test</span></p>
+    <h1 class="big wine">UNVEILED</h1>
+    <p class="sub">A little more about us.</p>
+    <div class="pile lock">
+      <input class="field line" id="pass" type="password" placeholder="Password" autocomplete="current-password" enterkeyhint="go" aria-label="Password" required>
+      <button class="go" id="next" disabled>Enter <span>→</span></button>
+      <p class="fine wine" id="oops" hidden>We couldn’t get things ready. Check your connection and try again.</p>
+    </div>
   </div>
-  <div class="bar">
-    <button class="ghost round" type="button" id="back" aria-label="Back">←</button>
-    <button class="go grow" id="next" disabled>Unlock <span>→</span></button>
-  </div>
+  <footer class="foot">
+    <p class="fine">Ask your host for the password.</p>
+    <button class="link" type="button" id="back" hidden>← Back</button>
+  </footer>
 </form>
 
 <style>
-.fill { gap: 1.1rem; }
-.field.line { margin-top: 1rem; letter-spacing: 0.1em; }
+.gate { align-items: center; text-align: center; gap: 1.1rem; }
+.gate .kick { margin-top: 0.5rem; }
+.seal { width: 4.5rem; height: 4.5rem; border-radius: 50%; display: block; margin-bottom: 0.5rem;
+  background: radial-gradient(circle at 30% 25%, var(--card), var(--glow)); box-shadow: inset 0 0 0 1px var(--rose), 0 0 0 0.6rem var(--glow);
+  animation: breathe 5s ease-in-out infinite alternate; }
+@keyframes breathe { to { box-shadow: inset 0 0 0 1px var(--rose), 0 0 0 1.1rem transparent; } }
+.lock { width: 100%; max-width: 22rem; gap: 1rem; margin-top: 1.75rem; }
+.field.line { text-align: center; letter-spacing: 0.12em; }
+.foot { display: flex; flex-direction: column; align-items: center; gap: 0.25rem; padding: 1rem 0 max(1.5rem, env(safe-area-inset-bottom)); text-align: center; }
 </style>
 
 <script>
 kit.createServer(function(req, res){
-  test.hidden = !(req.body || {}).test;
+  var c = req.body || {};
+  test.hidden = !c.test; back.hidden = !c.edit;
   res.send(document);
 });
 
@@ -36,5 +49,5 @@ PASS.send = function(){
 pass.oninput = () => { next.disabled = !pass.value; oops.hidden = true };
 form.onsubmit = eve => { eve.preventDefault(); PASS.send() };
 back.onclick = () => kit.say({to:'back'}, 'go');
-kit.ear('oops', () => { oops.hidden = false; next.disabled = false; next.firstChild.textContent = 'Unlock ' });
+kit.ear('oops', () => { oops.hidden = false; next.disabled = false; next.firstChild.textContent = 'Enter ' });
 </script>

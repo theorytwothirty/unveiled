@@ -13,6 +13,7 @@ VIEW.wait = ms => new Promise(ok => setTimeout(ok, ms));
 // spot = {at, i, who} — small, addressable, never an answer
 VIEW.show = async function(spot, how, seq, body, old, el){
   seq = ++VIEW.seq;
+  if(APP.lock && APP.lock(spot)){ spot = APP.home(); how = 'swap' }
   if('back' !== how){ history[(how || !history.state) ? 'replaceState' : 'pushState'](spot, '') }
   APP.spot = spot; old = VIEW.el;
   old && old.tag('out', 1);
@@ -20,7 +21,7 @@ VIEW.show = async function(spot, how, seq, body, old, el){
     body = await Promise.all([APP.page[spot.at](spot), VIEW.wait(old ? 220 : 0)]).then(all => all[0]);
   }catch(err){ body = null }
   if(seq !== VIEW.seq){ return }
-  if(!body){ return VIEW.show({at:'hello'}, 'swap') }
+  if(!body){ return VIEW.show(APP.home(), 'swap') }
   el = old && old.at === spot.at ? old : VIEW.make(spot.at);
   VIEW.dark(body.dark);
   await kit.fetch('view/' + spot.at + '.html', body, el).catch(VIEW.miss);
