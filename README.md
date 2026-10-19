@@ -1,5 +1,7 @@
 # UNVEILED
 
+> **Moved.** This repo is archived. UNVEILED now lives in [theorytwothirty/home](https://github.com/theorytwothirty/home/tree/main/unveiled) and is served at **https://tamarastupalova.com/unveiled/**.
+
 *A little more about us.* A private intimacy card game for a small group of adult friends, built on the RBDSMA framework (Relationships, Boundaries, Desires, Sexual health, Meaning, Aftercare), plus four optional After Dark questions.
 
 It runs entirely in the browser. Data syncs through [GUN](https://github.com/amark/gun) via the relay at `https://try.axe.eco/gun`, encrypted with [SEA](https://gun.eco/docs/SEA) using a group password. There are no accounts, no logins and no server to run.
